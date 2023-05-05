@@ -1,15 +1,23 @@
 import torch
 from torchvision import datasets, transforms
 
-transform = transforms.Compose([transforms.Resize(255),
-                                 transforms.CenterCrop(224),
-                                 transforms.ToTensor()])
+def prepare_data():
+    batch_size = 10
+    transform = transforms.Compose([
+        transforms.ToTensor()])
 
-train_dataset = datasets.ImageFolder('expression_faces_dataset/images/train', transform=transform)
+    train_dataset = datasets.ImageFolder('C:/Users/febue/Documents/complete_dataset/expression_faces_dataset/images/train', transform=transform)
+    validation_dataset = datasets.ImageFolder('C:/Users/febue/Documents/complete_dataset/expression_faces_dataset/images/validation', transform=transform)
 
-dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=32, shuffle=True)
+    train_loaded = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    validation_loaded = torch.utils.data.DataLoader(validation_dataset, batch_size=batch_size, shuffle=True)
 
-# Get one batch
-images, labels = next(iter(dataloader))
+    return train_loaded, validation_loaded
 
-print(images[0])
+def get_parameters():
+    batch_size = 10
+    number_of_labels = 7
+    classes = ('angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise')
+
+    return batch_size,number_of_labels,classes
+
