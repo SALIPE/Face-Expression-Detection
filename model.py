@@ -31,7 +31,7 @@ train_dataset = datasets.ImageFolder('./dataset/train', transform=train_transfor
 test_dataset = datasets.ImageFolder('./dataset/test', transform=test_transform)
 
 train_loaded = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-test_loaded = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
+test_loaded = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
 k=10
@@ -104,27 +104,27 @@ optimizer = Adam(model.parameters(), lr=0.001, weight_decay=0.0001)
 def saveModel():
     torch.save(model.state_dict(), "apurated_model.pth")
 
-def testAccuracy(test_dataset):
-  model.eval()
-  accuracy = 0.0
-  total = 0.0
+def test_train_accuracy(test_dataset):
+    model.eval()
+    accuracy = 0.0
+    total = 0.0
   
-  with torch.no_grad():
-      for data in test_dataset:
-          images, labels = data
+    with torch.no_grad():
+        for data in test_dataset:
+            images, labels = data
 
-          images = Variable(images.to(device))
-          labels = Variable(labels.to(device))
-          
-          outputs = model(images)
-          # the label with the highest energy will be our prediction
-          _, predicted = torch.max(outputs.data, 1)
-          total += labels.size(0)
-          accuracy += (predicted == labels).sum().item()
-  
-  # compute the accuracy over all test images
-  accuracy = (100 * accuracy / total)
-  return(accuracy)
+            images = images.to(device)
+            labels = labels.to(device)
+            
+            outputs = model(images)
+            # the label with the highest energy will be our prediction
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            accuracy += (predicted == labels).sum().item()
+    
+    # compute the accuracy over all test images
+    accuracy = (100 * accuracy / total)
+    return accuracy
 
 def train(num_epochs):
     history = {'train_loss': [], 'test_loss': [],'train_acc':[],'test_acc':[]}
@@ -148,8 +148,8 @@ def train(num_epochs):
             for i, (images, labels) in enumerate(train_loader, 0):
                 
                 # get the inputs
-                images = Variable(images.to(device))
-                labels = Variable(labels.to(device))
+                images = images.to(device)
+                labels = labels.to(device)
                 # zero the parameter gradients
                 optimizer.zero_grad()
                 # predict classes using images from the training set
@@ -171,8 +171,8 @@ def train(num_epochs):
                     running_loss = 0.0
 
             # Compute and print the average accuracy fo this epoch when tested over all 10000 test images
-            accuracy = testAccuracy(test_loader)
-            print('For epoch', epoch+1,'the test accuracy over the whole test set is %d %%' % (accuracy))
+            accuracy = test_train_accuracy(test_loader)
+            print('For epoch', epoch+1,'the test accuracy over the folder set is %d %%' % (accuracy))
             
             # we want to save the model if the accuracy is the best
             if accuracy > best_accuracy:
@@ -181,16 +181,21 @@ def train(num_epochs):
             
             
             history['test_acc'].append(accuracy)
+    print(history)
 
 
 def testBatch():
+    
+
+    model.eval()
     # get batch of images from the test DataLoader  
     images, labels = next(iter(test_loaded))
-    images = Variable(images.to(device))
-    labels = Variable(labels.to(device))
 
     # show all images as one image grid
-    imageshow(torchvision.utils.make_grid(images))
+    img = torchvision.utils.make_grid(images) / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
    
     # Show the real labels on the screen 
     print('Real labels: ', ' '.join('%5s' % classes[labels[j]] 
@@ -205,33 +210,34 @@ def testBatch():
     # Let's show the predicted labels on the screen to compare with the real ones
     print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] 
                               for j in range(batch_size)))
-
-
-def teste_classes():
+    
+def test_validation_accuracy():
     model = ConvolutionNeuralNetwork()
-    path = "apurated_model2.pth"
+    path = "apurated_model.pth"
     model.load_state_dict(torch.load(path))
-
     model.eval()
 
-    confusion_matrix = torch.zeros(7, 7)
+    accuracy = 0.0
+    total = 0.0
+  
     with torch.no_grad():
-        for i, (inputs, labels) in enumerate(test_loaded):
-            outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
-            for t, p in zip(labels.view(-1), preds.view(-1)):
-                    confusion_matrix[t.long(), p.long()] += 1
+        for data in test_loaded:
+            images, labels = data
+            
+            outputs = model(images)
+            # the label with the highest energy will be our prediction
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            accuracy += (predicted == labels).sum().item()
+    
+    # compute the accuracy over all test images
+    accuracy = (100 * accuracy / total)
+    print('the test accuracy over the whole test set is %d %%' % (accuracy)) 
 
-    print(confusion_matrix.diag()/confusion_matrix.sum(1))
     
 
 if __name__ == '__main__':
-    train(2)
+    train(10)
     print('Finished Training')
 
-    # model = ConvolutionNeuralNetwork()
-    # path = "apurated_model2.pth"
-    # model.load_state_dict(torch.load(path))
-    # teste_classes()
-
-    testBatch()
+    test_validation_accuracy()
