@@ -152,4 +152,5 @@ cython_debug/
 #.idea/
 
 expression_faces_dataset/
+dataset/
 *.zip
