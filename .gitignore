@@ -154,3 +154,5 @@ cython_debug/
 expression_faces_dataset/
 dataset/
 *.zip
+*.pth
+*.pth
