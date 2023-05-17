@@ -156,3 +156,5 @@ dataset/
 *.zip
 *.pth
 *.pth
+apurated_model.pth
+*.pth

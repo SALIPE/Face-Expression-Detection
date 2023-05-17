@@ -15,7 +15,7 @@ number_of_labels = 7
 classes = ('angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised')
 
 train_transform = transforms.Compose([
-    # transforms.Resize((227,227)), change to alexnet use
+    transforms.Resize((227,227)), #change to alexnet use
     transforms.Grayscale(num_output_channels=3),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
@@ -23,7 +23,7 @@ train_transform = transforms.Compose([
 ])
 
 test_transform = transforms.Compose([
-    # transforms.Resize((227,227)),
+    transforms.Resize((227,227)),
     transforms.Grayscale(num_output_channels=3),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
@@ -100,6 +100,8 @@ class AlexNet(nn.Module):
 
     
 class ConvolutionNeuralNetwork(nn.Module):
+    #acuracia no teste=58.07%
+    #acuracia no treino=61.2%
     def __init__(self):
         super(ConvolutionNeuralNetwork, self).__init__()
 
@@ -147,7 +149,7 @@ class ConvolutionNeuralNetwork(nn.Module):
 
 learning_rate = 0.005
 
-model = ConvolutionNeuralNetwork()
+model = AlexNet()
 
 # Define your execution device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -158,7 +160,7 @@ loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay = 0.001, momentum = 0.9)
 
 def saveModel():
-    torch.save(model.state_dict(), "apurated_model_cnn.pth")
+    torch.save(model.state_dict(), "apurated_model_alex.pth")
 
 def test_train_accuracy(test_dataset):
     model.eval()
@@ -336,7 +338,7 @@ if __name__ == '__main__':
 
     # test_validation_accuracy()
     # model = ConvolutionNeuralNetwork()
-    # path = "apurated_model.pth"
+    # path = "apurated_model_cnn.pth"
     # model.load_state_dict(torch.load(path))
     # model.to(device)
 
