@@ -152,7 +152,11 @@ cython_debug/
 #.idea/
 
 expression_faces_dataset/
+fer_ckplus_dataset/
 dataset/
+color_dataset/
+test_dataset/
+color_dataset_2/
 *.zip
 *.pth
 *.pth
