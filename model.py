@@ -109,25 +109,25 @@ class AlexNet(nn.Module):
 class FacialExpressionAlexNet(nn.Module):
     def __init__(self, num_classes=7):
         super(FacialExpressionAlexNet, self).__init__()
-        self.conv1 = nn.Conv2d(1, 96, kernel_size=11, stride=4, padding=2)
-        self.conv2 = nn.Conv2d(96, 256, kernel_size=5, stride=1, padding=2)
+        self.conv1 = nn.Conv2d(1, 96, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(96, 256, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(256, 384, kernel_size=3, stride=1, padding=1)
         self.conv4 = nn.Conv2d(384, 384, kernel_size=3, stride=1, padding=1)
         self.conv5 = nn.Conv2d(384, 256, kernel_size=3, stride=1, padding=1)
-        self.fc1 = nn.Linear(6 * 6 * 256, 1024)
-        self.fc2 = nn.Linear(1024, 512)
-        self.fc3 = nn.Linear(512, num_classes)
+        self.fc1 = nn.Linear(256 * 6 * 6, 4096)
+        self.fc2 = nn.Linear(4096, 4096)
+        self.fc3 = nn.Linear(4096, num_classes)
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 3, stride=2)
+        x = F.max_pool2d(x, 2, stride=2)
         x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 3, stride=2)
+        x = F.max_pool2d(x, 2, stride=2)
         x = F.relu(self.conv3(x))
         x = F.relu(self.conv4(x))
         x = F.relu(self.conv5(x))
-        x = F.max_pool2d(x, 3, stride=2)
+        x = F.max_pool2d(x, 2, stride=2)
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
         x = self.dropout(x)
@@ -186,14 +186,14 @@ class ConvolutionNeuralNetwork(nn.Module):
 
 learning_rate = 0.001
 
-model = ConvolutionNeuralNetwork()
+model = FacialExpressionAlexNet()
 
 # Define your execution device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Runing on: "+ ("cuda" if torch.cuda.is_available() else "cpu"))
 
 loss_fn = nn.CrossEntropyLoss()
-optimizer = Adam(model.parameters(), lr=learning_rate,  weight_decay = 0.0001)
+optimizer = Adam(model.parameters(), lr=learning_rate,  weight_decay = 0.001)
 # optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay = 0.001, momentum = 0.9)
 
 def saveModel():
@@ -307,11 +307,11 @@ def testBatch(model,device):
 
 
 if __name__ == '__main__':
-    train(5)
+    train(10)
     print('Finished Training')
 
-    # model = ConvolutionNeuralNetwork()
-    # path = "apurated_model_cnn.pth"
+    # model = FacialExpressionAlexNet()
+    # path = "apurated_model_fercnn.pth"
     # model.load_state_dict(torch.load(path))
 
     # testBatch(model,device)
