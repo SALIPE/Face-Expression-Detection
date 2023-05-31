@@ -18,31 +18,22 @@ classes = ('angry', 'fear', 'happy', 'neutral', 'sad', 'surprise','disgust')
 train_transform = transforms.Compose([
     # transforms.Resize((227,227)), #change to alexnet use
     transforms.Resize((48,48)), #change to alexnet use
-    transforms.Grayscale(num_output_channels=1),
+    transforms.Grayscale(num_output_channels=3),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5], std=[0.5])
 ])
 
-test_transform = transforms.Compose([
-    # transforms.Resize((227,227)),
-    transforms.Resize((48,48)),
-    transforms.Grayscale(num_output_channels=1),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5], std=[0.5])
-])
+
 
 train_dataset = datasets.ImageFolder('./color_dataset_2/train', transform=train_transform)
 # train_dataset2 = datasets.ImageFolder('./fer_ckplus_dataset', transform=train_transform)
 # train_dataset = ConcatDataset([train_dataset1,train_dataset2])
 
-test_dataset = datasets.ImageFolder('./color_dataset_2/test', transform=test_transform)
-
 train_loaded = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-test_loaded = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
 
-k=15
+
+k=10
 splits=KFold(n_splits=k,shuffle=True,random_state=42)
 foldperf={}
 
@@ -55,8 +46,8 @@ def imageshow(img):
 
 # imagest, labelst = next(iter(train_loaded))
 
-# # show all images as one image grid
-# imageshow(torchvision.utils.make_grid(imagest))
+# # # show all images as one image grid
+# imageshow(torchvision.utils.make_grid(imagest[0]))
 
 class AlexNet(nn.Module):
     #acuracia no teste=62.52% || 63.08%
@@ -138,11 +129,11 @@ class FacialExpressionAlexNet(nn.Module):
     
 class ConvolutionNeuralNetwork(nn.Module):
     #acuracia no teste=58.07%
-    #acuracia no treino=61.2%
+    #acuracia no treino=61.2% || 68.27545615067687 %
     def __init__(self):
         super(ConvolutionNeuralNetwork, self).__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=24, kernel_size=5, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=24, kernel_size=5, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(24)
 
         self.conv2 = nn.Conv2d(in_channels=24, out_channels=24, kernel_size=5, stride=1, padding=1)
@@ -186,18 +177,18 @@ class ConvolutionNeuralNetwork(nn.Module):
 
 learning_rate = 0.001
 
-model = FacialExpressionAlexNet()
+# model = ConvolutionNeuralNetwork()
 
 # Define your execution device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Runing on: "+ ("cuda" if torch.cuda.is_available() else "cpu"))
 
 loss_fn = nn.CrossEntropyLoss()
-optimizer = Adam(model.parameters(), lr=learning_rate,  weight_decay = 0.001)
+# optimizer = Adam(model.parameters(), lr=learning_rate,  weight_decay = 0.001)
 # optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay = 0.001, momentum = 0.9)
 
 def saveModel():
-    torch.save(model.state_dict(), "apurated_model_fercnn.pth")
+    torch.save(model.state_dict(), "apurated_model_fer2.pth")
 
 
 def train_epoch(model,device,dataloader):
@@ -262,9 +253,9 @@ def train(num_epochs):
                                                                                                                 test_loss,
                                                                                                                 train_acc,
                                                                                                                 test_acc))
-            if test_acc > best_accuracy and epoch>0:
+            if train_acc > best_accuracy:
                 saveModel()
-                best_accuracy = test_acc
+                best_accuracy = train_acc
                 print("Best Accuracy:{} %".format(best_accuracy))
 
             history['train_loss'].append(train_loss)
@@ -273,36 +264,8 @@ def train(num_epochs):
             history['test_acc'].append(test_acc)   
 
     df_history = pd.DataFrame(data=history)
-    df_history.to_csv("historic_fercnn.csv", encoding='utf-8', index=False)
+    df_history.to_csv("historic_fer2.csv", encoding='utf-8', index=False)
             
-
-
-def testBatch(model,device):
-    model.to(device)
-    model.eval()
-    # get batch of images from the test DataLoader  
-    images, labels = next(iter(test_loaded))
-   
-    # show all images as one image grid
-    img = torchvision.utils.make_grid(images)     # unnormalize
-    npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
-   
-    # Show the real labels on the screen 
-    print('Real labels: ', ' '.join('%5s' % classes[labels[j]] 
-                               for j in range(1)))
-  
-    with torch.no_grad():
-        images, labels = images.to(device),labels.to(device)
-        output = model(images)
-        scores, predictions = torch.max(output.data,1)
-        
-        # Let's show the predicted labels on the screen to compare with the real ones
-        print('Predicted: ', ' '.join('%5s' % classes[predictions[j]] 
-                                for j in range(1)))
-    
-    
 
 
 
@@ -310,18 +273,6 @@ if __name__ == '__main__':
     train(10)
     print('Finished Training')
 
-    # model = FacialExpressionAlexNet()
-    # path = "apurated_model_fercnn.pth"
-    # model.load_state_dict(torch.load(path))
+   
 
-    # testBatch(model,device)
-
-    # test_loss,test_correct=valid_epoch(model,device,test_loaded)
-    # test_loss = test_loss / len(test_loaded.sampler)
-    # test_acc = test_correct / len(test_loaded.sampler) * 100
-    # print(" AVG Test Loss:{:.3f} AVG Test Acc {:.2f} %".format( test_loss,test_acc))
-
-    # imagest, labelst = next(iter(test_loaded))
-
-    # # # show all images as one image grid
-    # imageshow(torchvision.utils.make_grid(imagest[0]))
+    
