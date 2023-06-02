@@ -158,7 +158,5 @@ color_dataset/
 test_dataset/
 color_dataset_2/
 *.zip
-*.pth
-*.pth
 apurated_model.pth
-*.pth
+apurated_model_alex.pth
