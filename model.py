@@ -12,126 +12,31 @@ from sklearn.model_selection import KFold
 import pandas as pd
 
 batch_size = 10
-number_of_labels = 7
 classes = ('angry', 'fear', 'happy', 'neutral', 'sad', 'surprise','disgust')
 
 train_transform = transforms.Compose([
-    # transforms.Resize((227,227)), #change to alexnet use
-    transforms.Resize((48,48)), #change to alexnet use
+    transforms.Resize((64,64)),
     transforms.Grayscale(num_output_channels=3),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
 ])
 
 
-
 train_dataset = datasets.ImageFolder('./color_dataset_2/train', transform=train_transform)
-# train_dataset2 = datasets.ImageFolder('./fer_ckplus_dataset', transform=train_transform)
-# train_dataset = ConcatDataset([train_dataset1,train_dataset2])
 
-train_loaded = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
-
+validation_dataset = datasets.ImageFolder('./fer_ckplus_dataset', transform=train_transform)
+concat_data = ConcatDataset([train_dataset,validation_dataset])
 
 k=10
 splits=KFold(n_splits=k,shuffle=True,random_state=42)
 foldperf={}
 
-
-def imageshow(img):
-    img = img / 2 + 0.5     # unnormalize
-    npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
-
-# imagest, labelst = next(iter(train_loaded))
-
-# # # show all images as one image grid
-# imageshow(torchvision.utils.make_grid(imagest[0]))
-
-class AlexNet(nn.Module):
-    #acuracia no teste=62.52% || 63.08%
-    #acuracia no treino=81.46% || 86.80%
-    def __init__(self):
-        super(AlexNet, self).__init__()
-
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=96, kernel_size=10, stride=4, padding=1)
-        self.bn1 = nn.BatchNorm2d(96)
-        self.pool1= nn.MaxPool2d(3,2)
-
-        self.conv2 = nn.Conv2d(in_channels=96, out_channels=256, kernel_size=5, stride=1, padding=2)
-        self.bn2 = nn.BatchNorm2d(256)
-        self.pool2 = nn.MaxPool2d(3,2)
-
-        self.conv3 = nn.Conv2d(in_channels=256, out_channels=384, kernel_size=3, stride=1, padding=1)
-        self.bn3 = nn.BatchNorm2d(384)
-
-        self.conv4 = nn.Conv2d(in_channels=384, out_channels=384, kernel_size=3, stride=1, padding=1)
-        self.bn4 = nn.BatchNorm2d(384)
-
-        self.conv5 = nn.Conv2d(in_channels=384, out_channels=256, kernel_size=3, stride=1, padding=1)
-        self.bn5 = nn.BatchNorm2d(256)
-        self.pool3 = nn.MaxPool2d(3,2)
-
-        self.fc1 = nn.Linear(9216, 4096)
-        self.fc2 = nn.Linear(4096, 4096)
-        self.fc3 = nn.Linear(4096, number_of_labels)
-
-
-    def forward(self, input):
-        output = F.relu(self.bn1(self.conv1(input)))   
-        output = self.pool1(output)     
-        output = F.relu(self.bn2(self.conv2(output)))     
-        output = self.pool2(output)    
-
-        output = F.relu(self.bn3(self.conv3(output)))     
-        output = F.relu(self.bn4(self.conv4(output)))   
-        output = F.relu(self.bn5(self.conv5(output))) 
-        output = self.pool3(output)   
-
-        output = output.reshape(output.size(0),-1)
-
-        output = F.relu(self.fc1(output))
-        output = F.relu(self.fc2(output))
-        output = self.fc3(output)
-
-        return output
-
-class FacialExpressionAlexNet(nn.Module):
-    def __init__(self, num_classes=7):
-        super(FacialExpressionAlexNet, self).__init__()
-        self.conv1 = nn.Conv2d(1, 96, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(96, 256, kernel_size=3, stride=1, padding=1)
-        self.conv3 = nn.Conv2d(256, 384, kernel_size=3, stride=1, padding=1)
-        self.conv4 = nn.Conv2d(384, 384, kernel_size=3, stride=1, padding=1)
-        self.conv5 = nn.Conv2d(384, 256, kernel_size=3, stride=1, padding=1)
-        self.fc1 = nn.Linear(256 * 6 * 6, 4096)
-        self.fc2 = nn.Linear(4096, 4096)
-        self.fc3 = nn.Linear(4096, num_classes)
-        self.dropout = nn.Dropout(0.5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2, stride=2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2, stride=2)
-        x = F.relu(self.conv3(x))
-        x = F.relu(self.conv4(x))
-        x = F.relu(self.conv5(x))
-        x = F.max_pool2d(x, 2, stride=2)
-        x = x.view(x.size(0), -1)
-        x = F.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = F.relu(self.fc2(x))
-        x = self.dropout(x)
-        x = self.fc3(x)
-        return x
     
-class ConvolutionNeuralNetwork(nn.Module):
+class ConvolutionNeuralNetwork1(nn.Module):
     #acuracia no teste=58.07%
     #acuracia no treino=61.2% || 68.27545615067687 %
-    def __init__(self):
-        super(ConvolutionNeuralNetwork, self).__init__()
+    def __init__(self,num_classes=7):
+        super(ConvolutionNeuralNetwork1, self).__init__()
 
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=24, kernel_size=5, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(24)
@@ -153,7 +58,7 @@ class ConvolutionNeuralNetwork(nn.Module):
         self.drop3=nn.Dropout(p=0.5)
 
         self.fc2 = nn.Linear(192, 96)
-        self.fc3 = nn.Linear(96, number_of_labels)
+        self.fc3 = nn.Linear(96, num_classes)
 
 
     def forward(self, input):
@@ -174,22 +79,76 @@ class ConvolutionNeuralNetwork(nn.Module):
 
         return output
 
+class ConvolutionNeuralNetwork(nn.Module):
+    def __init__(self,num_classes=7):
+        super(ConvolutionNeuralNetwork, self).__init__()
 
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=24, kernel_size=5, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(24)
+        self.conv2 = nn.Conv2d(in_channels=24, out_channels=24, kernel_size=5, stride=1, padding=1)
+        self.bn2 = nn.BatchNorm2d(24)
+
+        self.pool1 = nn.MaxPool2d(2,2)
+
+        self.conv3 = nn.Conv2d(in_channels=24, out_channels=48, kernel_size=3, stride=1, padding=1)
+        self.bn3 = nn.BatchNorm2d(48)
+        self.conv4 = nn.Conv2d(in_channels=48, out_channels=48, kernel_size=3, stride=1, padding=1)
+        self.bn4 = nn.BatchNorm2d(48)
+
+        self.pool2 = nn.MaxPool2d(2,2)
+        self.drop1=nn.Dropout(p=0.2)
+
+        self.conv5 = nn.Conv2d(in_channels=48, out_channels=96, kernel_size=5, stride=1, padding=1)
+        self.bn5 = nn.BatchNorm2d(96)
+        self.conv6 = nn.Conv2d(in_channels=96, out_channels=96, kernel_size=4, stride=1, padding=1)
+        self.bn6 = nn.BatchNorm2d(96)
+
+        self.pool3 = nn.MaxPool2d(2,2)
+
+        self.fc1 = nn.Linear(96*6*6, 192)
+        self.drop2=nn.Dropout(p=0.2)
+
+        self.fc2 = nn.Linear(192, 96)
+        self.fc3 = nn.Linear(96, num_classes)
+
+
+    def forward(self, input):
+        output = F.relu(self.bn1(self.conv1(input)))      
+        output = F.relu(self.bn2(self.conv2(output)))     
+        output = self.pool1(output)  
+
+        output = F.relu(self.bn3(self.conv3(output)))      
+        output = F.relu(self.bn4(self.conv4(output)))     
+        output = self.pool2(output)      
+        output = self.drop1(output)  
+
+        output = F.relu(self.bn5(self.conv5(output)))      
+        output = F.relu(self.bn6(self.conv6(output)))  
+        output = self.pool3(output)  
+
+        output = output.reshape(output.size(0),-1)
+
+        output = F.relu(self.fc1(output))
+        output = self.drop2(output)
+        output = F.relu(self.fc2(output))
+        output = self.fc3(output)
+
+        return output
+    
 learning_rate = 0.001
 
-# model = ConvolutionNeuralNetwork()
+model = ConvolutionNeuralNetwork()
 
 # Define your execution device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Runing on: "+ ("cuda" if torch.cuda.is_available() else "cpu"))
 
 loss_fn = nn.CrossEntropyLoss()
-# optimizer = Adam(model.parameters(), lr=learning_rate,  weight_decay = 0.001)
+optimizer = Adam(model.parameters(), lr=learning_rate,  weight_decay = 0.001)
 # optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay = 0.001, momentum = 0.9)
 
 def saveModel():
-    torch.save(model.state_dict(), "apurated_model_fer2.pth")
-
+    torch.save(model.state_dict(), "apurated_model_mycnn.pth")
 
 def train_epoch(model,device,dataloader):
     train_loss,train_correct=0.0,0
@@ -197,10 +156,14 @@ def train_epoch(model,device,dataloader):
     for images, labels in dataloader:
 
         images,labels = images.to(device),labels.to(device)
+
         optimizer.zero_grad()
         output = model(images)
         loss = loss_fn(output,labels)
+
         loss.backward()
+        # accelerator.backward(loss)
+
         optimizer.step()
         train_loss += loss.item() * images.size(0)
         scores, predictions = torch.max(output.data, 1)
@@ -217,26 +180,27 @@ def valid_epoch(model,device,dataloader):
             images,labels = images.to(device),labels.to(device)
             output = model(images)
             loss=loss_fn(output,labels)
+            
             valid_loss+=loss.item()*images.size(0)
             scores, predictions = torch.max(output.data,1)
             val_correct+=(predictions == labels).sum().item()
 
     return valid_loss,val_correct
-
 def train(num_epochs):
     history = {'train_loss': [], 'test_loss': [],'train_acc':[],'test_acc':[]}
     best_accuracy = 0.0
+
+    model.to(device)
     
-    for fold, (train_idx,val_idx) in enumerate(splits.split(np.arange(len(train_dataset)))):
+    for fold, (train_idx,val_idx) in enumerate(splits.split(np.arange(len(concat_data)))):
 
         print('Fold {}'.format(fold + 1))
 
-        train_sampler = SubsetRandomSampler(train_idx)
         test_sampler = SubsetRandomSampler(val_idx)
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=train_sampler)
-        test_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=test_sampler)
-        
-        model.to(device)
+        train_samples =  SubsetRandomSampler(train_idx)
+
+        test_loader = DataLoader(concat_data, batch_size=batch_size, sampler=test_sampler)
+        train_loader = DataLoader(concat_data, batch_size=batch_size, sampler=train_samples)
 
         for epoch in range(num_epochs):
             train_loss, train_correct=train_epoch(model,device,train_loader)
@@ -244,15 +208,16 @@ def train(num_epochs):
 
             train_loss = train_loss / len(train_loader.sampler)
             train_acc = train_correct / len(train_loader.sampler) * 100
+
             test_loss = test_loss / len(test_loader.sampler)
             test_acc = test_correct / len(test_loader.sampler) * 100
 
             print("Epoch:{}/{} AVG Training Loss:{:.3f} AVG Test Loss:{:.3f} AVG Training Acc {:.2f} % AVG Test Acc {:.2f} %".format(epoch + 1,
-                                                                                                                num_epochs,
-                                                                                                                train_loss,
-                                                                                                                test_loss,
-                                                                                                                train_acc,
-                                                                                                                test_acc))
+                                                                                                                    num_epochs,
+                                                                                                                    train_loss,
+                                                                                                                    test_loss,
+                                                                                                                    train_acc,
+                                                                                                                    test_acc))
             if train_acc > best_accuracy:
                 saveModel()
                 best_accuracy = train_acc
@@ -264,13 +229,16 @@ def train(num_epochs):
             history['test_acc'].append(test_acc)   
 
     df_history = pd.DataFrame(data=history)
-    df_history.to_csv("historic_fer2.csv", encoding='utf-8', index=False)
+    df_history.to_csv("historic_mycnn.csv", encoding='utf-8', index=False)
             
 
 
 
 if __name__ == '__main__':
-    train(10)
+    torch.cuda.empty_cache()
+    print(torch.cuda.memory_summary(device=None, abbreviated=False))
+    
+    train(20)
     print('Finished Training')
 
    
