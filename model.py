@@ -90,9 +90,9 @@ class ConvolutionNeuralNetwork(nn.Module):
 
         self.pool1 = nn.MaxPool2d(2,2)
 
-        self.conv3 = nn.Conv2d(in_channels=24, out_channels=48, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(in_channels=24, out_channels=48, kernel_size=5, stride=1, padding=1)
         self.bn3 = nn.BatchNorm2d(48)
-        self.conv4 = nn.Conv2d(in_channels=48, out_channels=48, kernel_size=3, stride=1, padding=1)
+        self.conv4 = nn.Conv2d(in_channels=48, out_channels=48, kernel_size=5, stride=1, padding=1)
         self.bn4 = nn.BatchNorm2d(48)
 
         self.pool2 = nn.MaxPool2d(2,2)
@@ -105,7 +105,7 @@ class ConvolutionNeuralNetwork(nn.Module):
 
         self.pool3 = nn.MaxPool2d(2,2)
 
-        self.fc1 = nn.Linear(96*6*6, 192)
+        self.fc1 = nn.Linear(96*5*5, 192)
         self.drop2=nn.Dropout(p=0.2)
 
         self.fc2 = nn.Linear(192, 96)
@@ -238,7 +238,7 @@ if __name__ == '__main__':
     torch.cuda.empty_cache()
     print(torch.cuda.memory_summary(device=None, abbreviated=False))
     
-    train(20)
+    train(30)
     print('Finished Training')
 
    
