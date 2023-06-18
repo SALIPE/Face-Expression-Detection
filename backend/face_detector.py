@@ -26,7 +26,8 @@ def face_img_detector(imagefile):
         # cv.rectangle(image_gray,(x,y),(x+w,y+h), (255,0,0),1)
 
     cropped = image_gray[y:cord1,x:cord2]
-    cv.imshow('imagem', cropped)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    return "Broxa"
+    # cv.imshow('imagem', cropped)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
 

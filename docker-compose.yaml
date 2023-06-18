@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/backend:/usr/src/fer"
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_ENV=development
+
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: my-app/Dockerfile
+    volumes:
+      - "./services/frontend:/usr/src/fer"
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_BACKEND_SERVICE_URL=http://localhost:5000
+    depends_on:
+      - backend
