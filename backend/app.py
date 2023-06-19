@@ -1,6 +1,6 @@
 from flask import Flask,request,Response
 import jsonpickle
-from face_detector import face_img_detector
+from face_detector import get_facial_expression
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -13,8 +13,8 @@ def hello_world():
 @app.post("/get-image")
 def get_face():
     file = request.files['imagefile'].read()
-    face_expression = face_img_detector(file)
-    response = {'message': 'emotion={}'.format(face_expression)}
+    face_expression = get_facial_expression(file)
+    response = {'message': face_expression}
     # encode response using jsonpickle
     response_pickled = jsonpickle.encode(response)
 
