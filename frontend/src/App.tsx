@@ -6,6 +6,7 @@ function App() {
 
   const [emotion, setEmotion] = useState<string>("");
 
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
