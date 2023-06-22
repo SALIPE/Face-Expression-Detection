@@ -4,6 +4,10 @@ export default function Init() {
   const [wikiVisible, setWikiVisible] = useState(false);
   const [devsVisible, setDevsVisible] = useState(false);
 
+  const goToAlgoritmo=()=>{
+    //navegar p outra tela
+  }
+
   const toggleWiki = () => {
     setWikiVisible(!wikiVisible);
     setDevsVisible(false);
@@ -19,7 +23,7 @@ export default function Init() {
     <>
       <div className="inicio">
         <span className="spanIni">
-          <button className="glow-on-hover">
+          <button className="glow-on-hover" onClick={goToAlgoritmo}>
             <input type="image" src="https://i.ibb.co/w7F46p7/Screenshot-5.png"
               alt='algumacoisa'
               style={{
@@ -32,7 +36,7 @@ export default function Init() {
       </div>
       <div className="info">
         <span className="spanInfo">
-          <button className="glow-on-hover">Wiki</button>
+          <button className="glow-on-hover" onClick={toggleWiki}>Wiki</button>
           <span id="wiki" className="glow-on-hover">
             As expressões faciais são formas de comunicação humana que transmitem diversas emoções, como alegria, tristeza, raiva, medo e surpresa. Elas são formadas pela contração dos músculos do rosto e podem ser involuntárias ou voluntárias, dependendo do contexto.
             Existem seis emoções básicas universalmente reconhecidas, mas a expressão de neutralidade também pode ser considerada uma emoção básica.
@@ -42,7 +46,7 @@ export default function Init() {
           </span>
         </span>
         <span className="spanInfo">
-          <button className="glow-on-hover">Devs</button>
+          <button className="glow-on-hover" onClick={toggleDevs}>Devs</button>
           <span id="devs" className="glow-on-hover">
             <div>
               <div>

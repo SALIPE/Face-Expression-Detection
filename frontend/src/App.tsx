@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './assets/css/Index.css';
-import Algoritmo from './telas/Algoritmo';
+import Algoritmo from './telas/algoritmo';
 import Init from './telas/Init';
 
 export default function App() {
