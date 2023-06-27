@@ -1,5 +1,18 @@
-body {
+.content-wrapper {
     background-image: url('https://i.ibb.co/vk0shrg/dfsdfsdfdf.png');
+    height: 100vh;
+    width: 100%;
+
+}
+
+.panel {
+    height: 100vh;
+    overflow: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+
 }
 
 .glow-on-hover {
@@ -52,56 +65,20 @@ body {
     border-radius: 10px;
 }
 
-div {
-    display: flex;
-}
-
-.inicio {
-    user-select: none;
-    margin-top: 20%;
-    margin-left: 40%;
-}
-
-.info {
-    user-select: none;
-    margin-top: 5px;
-    margin-left: 591px;
-}
-
-.spanIni {
-    width: 260px;
-    height: 90px;
-}
-
-.spanInfo {
-    display: block;
-    margin: 2px;
-    width: 120px;
-    height: 40px;
-}
-
 #wiki {
-    display: none;
     border-radius: 15px;
-    padding: 15px;
+    padding: 9px;
     margin-top: 5px;
-    margin-left: 20px;
-    width: 600px;
-    height: 240px;
-    opacity: 1;
-    animation-name: animaWiki;
+    width: 100%;
+    animation-name: animaDev;
     animation-duration: 0.1s;
 }
 
 #devs {
-    display: none;
     border-radius: 15px;
     padding: 9px;
     margin-top: 5px;
-    margin-left: 10px;
-    width: 300px;
-    height: 220px;
-    opacity: 1;
+    width: 100%;
     animation-name: animaDev;
     animation-duration: 0.1s;
 }
@@ -118,12 +95,9 @@ div {
 }
 
 .picture {
-    user-select: none;
-    width: 600px;
+    width: 100%;
     aspect-ratio: 16/9;
     border-radius: 15px;
-    margin-top: 13%;
-    margin-left: 28%;
     background: #ddd;
     display: flex;
     align-items: center;
