@@ -1,30 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './assets/css/Index.css';
-import Algoritmo from './telas/Algoritmo';
+import { HashRouter, Route, Routes } from "react-router-dom";
 import Init from './telas/Init';
+import Algoritmo from './telas/Algoritmo';
+import Wrapper from './Wrapper';
 
 export default function App() {
-
-  const [emotion, setEmotion] = useState<string>("");
-
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  }
-  const requestOptions: RequestInit = {
-    method: 'GET',
-    headers
-  };
-
-  useEffect(() => {
-    fetch("http://localhost:5000/", requestOptions)
-      .then(res => res.json())
-      .then(res => setEmotion(res.emotion))
-      .catch(e => console.error(e))
-  }, []);
-
   return (
-    <Init />
+    <HashRouter>
+      <Routes>
+        <Route element={<Wrapper />}>
+          <Route path="/" element={<Init />} />
+          <Route path="/classifier" element={<Algoritmo />} />
+        </Route>
+
+      </Routes>
+    </HashRouter>
   );
 };
 
