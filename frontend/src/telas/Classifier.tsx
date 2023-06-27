@@ -64,12 +64,12 @@ export default function Algoritmo() {
         <Row className="justify-content-center">
             <Col md={6}>
                 <label className="picture" htmlFor="picture__input">
-                    <img alt="teste" width="100%" height="100%" src={pictureImage} />
+                    <img alt="Insira a Imagem aqui" width="100%" height="100%" src={pictureImage} />
                 </label>
 
                 <input type="file" name="picture__input" id="picture__input"
                     onChange={handleFileChange} />
-                <h1>{emotion}</h1>
+                <h1 style={{backgroundColor:'black', color:'white', textAlign:'center', fontFamily:'sans-serif',  borderRadius:15 }}>{emotion}</h1>
             </Col>
 
         </Row>
