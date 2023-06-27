@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import fotoJonathan from '../images/jonathan.png'
+import fotoFelipe from '../images/felipe.png'
+import fotoGustavo from '../images/gustavo.png'
+import fotoGiovanni from '../images/giovanni.png'
+ 
 
 export default function Init() {
   const [wikiVisible, setWikiVisible] = useState(false);
@@ -48,8 +53,8 @@ export default function Init() {
                   overflow: "auto"
                 }}>
                 <Card>
-                  <Card.Body>
-                    <p>
+                  <Card.Body style={{backgroundColor:'black'}}>
+                    <p style={{color:'white', textAlign:'justify'}}>
                       As expressões faciais são formas de comunicação humana que transmitem diversas emoções, como alegria, tristeza, raiva, medo e surpresa. Elas são formadas pela contração dos músculos do rosto e podem ser involuntárias ou voluntárias, dependendo do contexto.
                       Existem seis emoções básicas universalmente reconhecidas, mas a expressão de neutralidade também pode ser considerada uma emoção básica.
                       Nos últimos anos, houve avanços na detecção de expressões faciais por meio de algoritmos e técnicas de aprendizado de máquina, como redes neurais.
@@ -65,18 +70,18 @@ export default function Init() {
           <Col sm={4}>
             <button style={{ height: 50 }} className="glow-on-hover" onClick={toggleDevs}>Devs</button>
             {devsVisible &&
-              <div >
+              <div style={{background:'black', borderRadius:20}}>
                 <div className='d-flex'>
-                  <img src="https://i.ibb.co/SfH4r6c/mystery.jpg" alt="Sem foto" id="fotos" /><p>Giovani Siervo</p>
+                  <img src={fotoGiovanni} alt="Sem foto" id="fotos" /><p style={{color:'white'}} >Giovani Siervo</p>
                 </div>
                 <div className='d-flex'>
-                  <img src="https://i.ibb.co/SfH4r6c/mystery.jpg" alt="Sem foto" id="fotos" /><p>Gustavo Zago</p>
+                  <img src={fotoGustavo} alt="Sem foto" id="fotos" /><p style={{color:'white'}}>Gustavo Zago</p>
                 </div>
                 <div className='d-flex'>
-                  <img src="https://i.ibb.co/SfH4r6c/mystery.jpg" alt="Sem foto" id="fotos" /><p>Felipe Bueno</p>
+                  <img src={fotoFelipe} alt="Sem foto" id="fotos" /><p style={{color:'white'}}>Felipe Bueno</p>
                 </div>
                 <div className='d-flex'>
-                  <img src="https://i.ibb.co/SfH4r6c/mystery.jpg" alt="Sem foto" id="fotos" /><p>Jonathan Christofoleti</p>
+                  <img src={fotoJonathan} alt="Sem foto" id="fotos" /><p style={{color:'white'}}>Jonathan Christofoleti</p>
                 </div>
               </div>}
 

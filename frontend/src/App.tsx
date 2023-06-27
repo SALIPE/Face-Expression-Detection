@@ -6,6 +6,9 @@ import Algoritmo from './telas/Classifier';
 import Wrapper from './Wrapper';
 
 export default function App() {
+
+  document.title = 'Reconhecimento Facial  ';
+
   return (
     <HashRouter>
       <Routes>
