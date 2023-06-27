@@ -2,7 +2,7 @@ import React from 'react';
 import './assets/css/Index.css';
 import { HashRouter, Route, Routes } from "react-router-dom";
 import Init from './telas/Init';
-import Algoritmo from './telas/Algoritmo';
+import Algoritmo from './telas/Classifier';
 import Wrapper from './Wrapper';
 
 export default function App() {
