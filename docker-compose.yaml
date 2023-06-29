@@ -1,12 +1,12 @@
-version: "3.8"
+version: "3.3"
 
 services:
   backend:
     build:
-      context: ./services/backend
+      context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - "./services/backend:/usr/src/fer"
+      - "./backend:/usr/src/fer-back"
     ports:
       - 5000:5000
     environment:
@@ -14,10 +14,10 @@ services:
 
   frontend:
     build:
-      context: ./services/frontend
-      dockerfile: my-app/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     volumes:
-      - "./services/frontend:/usr/src/fer"
+      - "./frontend:/usr/src/fer-front"
     ports:
       - 3000:3000
     environment:
