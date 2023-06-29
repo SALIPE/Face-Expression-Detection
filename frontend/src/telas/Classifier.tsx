@@ -1,11 +1,13 @@
 import React, { useState, ChangeEvent } from 'react';
 import { Row, Col } from 'react-bootstrap';
+import { ThreeDots  } from 'react-loader-spinner'
 
 
 export default function Algoritmo() {
 
     const [emotion, setEmotion] = useState<string>("");
     const [pictureImage, setPictureImage] = useState<string>("");
+    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -41,6 +43,7 @@ export default function Algoritmo() {
 
 
     function getEmotion(image: any) {
+        setLoading(true)
         const formData = new FormData();
         formData.append('imagefile', image);
         const headers: HeadersInit = {
@@ -55,9 +58,15 @@ export default function Algoritmo() {
             .then(res => res.json())
             .then(res => {
                 console.log(res)
+                setLoading(false)
                 setEmotion(res.message)
             })
-            .catch(e => console.error(e))
+            .catch(e => {
+                setLoading(false)
+                setEmotion("A imagem não deu certo. Tente novamente")
+                console.error(e)
+            })
+                
     }
 
     return (
@@ -69,7 +78,22 @@ export default function Algoritmo() {
 
                 <input type="file" name="picture__input" id="picture__input"
                     onChange={handleFileChange} />
+                {loading?
+                <Col style={{display:'flex',justifyContent:'center'}}>
+                    <ThreeDots
+                    height="80" 
+                    width="80" 
+                    radius="9"
+                    color="black" 
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                    />
+                </Col>
+                :
                 <h1 style={{backgroundColor:'black', color:'white', textAlign:'center', fontFamily:'sans-serif',  borderRadius:15 }}>{emotion}</h1>
+                }
             </Col>
 
         </Row>
