@@ -17,7 +17,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - "./frontend:/usr/src/fer-front"
+      - "./frontend:/usr/src/fer-front  "
     ports:
       - 3000:3000
     environment:
